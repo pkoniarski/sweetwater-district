@@ -1,56 +1,45 @@
-# Sweetwater District — BSA San Diego-Imperial Council
-### Unit Website Platform
+# Sweetwater District Unit Website Platform
 
 **Live site:** https://pkoniarski.github.io/sweetwater-district/
 
----
-
-## Repository Structure
-
+## Repo structure
 ```
 sweetwater-district/
-├── index.html              ← District Hub (main page)
-├── unit-template.html      ← Setup wizard — units use this to create their site
-├── README.md               ← This file
+├── index.html             ← District Hub (directory, master calendar, news)
+├── unit-template.html     ← Web Builder (5-step wizard → downloads unit site)
+├── README.md
 └── units/
-    ├── troop-800/
-    │   └── index.html      ← Troop 800 website
-    ├── troop-850/
-    │   └── index.html
-    ├── pack-755/
-    │   └── index.html
-    └── (add more as units join)
+    ├── troop-800/index.html      ← live unit sites (uploaded by district admin)
+    ├── pack-755/index.html
+    └── ...
 ```
 
-## Adding a New Unit (Roundtable Workflow)
+## Unit URL convention
+`https://pkoniarski.github.io/sweetwater-district/units/{type}-{number}/`
+Folder names: lowercase, hyphens — `troop-800`, `troop-800g`, `pack-755`, `crew-42`, `ship-12`
 
-1. Unit leader visits `https://pkoniarski.github.io/sweetwater-district/unit-template.html`
-2. Completes the 5-step setup wizard (~5 minutes)
-3. Downloads their generated HTML file (e.g. `Troop_800_Chula_Vista.html`)
-4. In this repo: click **Add file → Upload files**
-5. Navigate into `units/` → create folder `troop-800/` → upload file renamed to `index.html`
-6. Commit — site is live in ~2 minutes at `pkoniarski.github.io/sweetwater-district/units/troop-800/`
+## How a unit gets a website (the roundtable workflow)
+1. Leader opens `/unit-template.html` and completes the 5-step wizard (~3 min)
+2. Wizard downloads a configured file, e.g. `Troop_800_Chula_Vista.html`
+3. Leader emails the file to the district admin
+4. Admin uploads it to `units/troop-800/index.html` via GitHub drag-and-drop
+5. Live in ~90 seconds
 
-## Unit URLs
+## Calendar sync (Phase 1 — same-origin localStorage)
+- **Uplink:** when a unit adds an event with "📡 Also publish on the District
+  calendar" checked, it's written to the shared key `sw_district_shared_events`,
+  which the District Hub reads and displays with unit attribution.
+- **Downlink:** the district admin clicks "+ District Event (admin)" on the
+  master calendar (password protected); the event is written to
+  `sw_district_broadcast`, which every unit page merges into its calendar.
+- Live cross-tab updates via the browser `storage` event.
+- ⚠️ Works only when pages share an origin (GitHub Pages ✅, file:// ❌).
+- Phase 2 replaces both keys with REST endpoints (`/api/district/events`) —
+  the migration points are marked with `COUNCIL SERVER:` comments in the code.
 
-| Unit | URL |
-|------|-----|
-| District Hub | https://pkoniarski.github.io/sweetwater-district/ |
-| Setup Wizard | https://pkoniarski.github.io/sweetwater-district/unit-template.html |
-| Troop 800 | https://pkoniarski.github.io/sweetwater-district/units/troop-800/ |
-| Troop 850 | https://pkoniarski.github.io/sweetwater-district/units/troop-850/ |
-| Pack 755 | https://pkoniarski.github.io/sweetwater-district/units/pack-755/ |
-
-## Folder Name Convention
-
-Use lowercase with hyphens: `troop-800`, `pack-755`, `crew-42`, `ship-12`
-
-## Technology
-
-Static HTML/CSS/JS — no build step required. GitHub Pages serves files directly.
-
-**Backend migration:** When the Council server is ready, only two functions in each unit file need to change (`loadUnitData` and `saveUnitData`). All URLs stay the same.
-
-## Contact
-
-SM Paul · Troop 800 · Sweetwater District · San Diego-Imperial Council, BSA
+## Phase roadmap
+| Phase | Hosting | Adds |
+|---|---|---|
+| 1 (now) | GitHub Pages, free | Unit sites, wizard, same-browser calendar sync |
+| 2 | DigitalOcean ~$15/mo | Real DB, photo uploads, cross-device sync, iCal feeds |
+| 3 | Council server | my.Scouting SSO, official hosting |

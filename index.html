@@ -630,6 +630,8 @@ input, select, textarea { font-family: 'Source Sans 3', sans-serif; }
 .page-section.active .wrap > *:nth-child(2) { animation-delay:0.07s; }
 .page-section.active .wrap > *:nth-child(3) { animation-delay:0.13s; }
 .page-section.active .wrap > *:nth-child(4) { animation-delay:0.18s; }
+.ev-unit { background:#FDECEA; color:#8B1621; }
+.ev-district { background:#EBF5F0; color:#1B4332; }
 </style>
 </head>
 <body>
@@ -638,10 +640,10 @@ input, select, textarea { font-family: 'Source Sans 3', sans-serif; }
 <div class="council-ribbon">
   <span>⚜️ &nbsp;San Diego Imperial Council &mdash; Scouting America</span>
   <div class="ribbon-links">
-    <a href="#">SDIC Website</a>
-    <a href="#">MyScouting</a>
-    <a href="#">Scoutbook</a>
-    <a href="#">Council Calendar</a>
+    <a href="https://www.sdicbsa.org" target="_blank" rel="noopener">SDIC Website</a>
+    <a href="https://my.scouting.org" target="_blank" rel="noopener">MyScouting</a>
+    <a href="https://www.scouting.org/scoutbook" target="_blank" rel="noopener">Scoutbook</a>
+    <a href="https://www.sdicbsa.org/calendar" target="_blank" rel="noopener">Council Calendar</a>
   </div>
 </div>
 
@@ -665,10 +667,10 @@ input, select, textarea { font-family: 'Source Sans 3', sans-serif; }
       <button class="nav-tab" onclick="showView('training',this)">Training &amp; Resources</button>
     </div>
     <div class="nav-right">
-      <button class="btn-ical" onclick="alert('Opens iCal subscription dialog — subscribe in Google, Apple, or Outlook Calendar')">
-        📅 Subscribe to Calendar
+      <button class="btn-ical" onclick="showView('calendar', document.querySelectorAll('.nav-tab')[2])">
+        📅 Master Calendar
       </button>
-      <button class="btn-login" onclick="alert('Unit leader login — manage your unit\'s website')">Unit Login</button>
+      <button class="btn-login" onclick="location.href='unit-template.html'">🛠 Build Your Unit Website</button>
     </div>
   </div>
 </nav>
@@ -689,15 +691,15 @@ input, select, textarea { font-family: 'Source Sans 3', sans-serif; }
       <p class="hero-sub">The Sweetwater District connects every pack, troop, crew, and ship in Chula Vista, National City, Bonita, and surrounding communities — one unified calendar, one public directory, one Scouting home.</p>
       <div class="hero-stats">
         <div class="hero-stat">
-          <span class="hero-stat-num">34</span>
+          <span class="hero-stat-num" id="stat-units">0</span>
           <span class="hero-stat-label">Active units</span>
         </div>
         <div class="hero-stat">
-          <span class="hero-stat-num">1,240</span>
+          <span class="hero-stat-num" id="stat-youth">0</span>
           <span class="hero-stat-label">Registered youth</span>
         </div>
         <div class="hero-stat">
-          <span class="hero-stat-num">412</span>
+          <span class="hero-stat-num" id="stat-volunteers">0</span>
           <span class="hero-stat-label">Adult volunteers</span>
         </div>
       </div>
@@ -746,10 +748,6 @@ input, select, textarea { font-family: 'Source Sans 3', sans-serif; }
       <div style="display:inline-block;margin-top:8px;font-size:11px;font-weight:700;padding:2px 9px;border-radius:99px;background:#EEF2FB;color:#1A3A6B">District</div>
     </div>
     <div style="background:var(--paper);border-radius:var(--r-lg);border:1px solid var(--bone);padding:18px 20px;box-shadow:var(--sh-sm)">
-      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:6px">May 23 · Saturday</div>
-      <div style="font-size:15px;font-weight:600;color:var(--ink);margin-bottom:3px">Pack 123 Blue &amp; Gold</div>
-      <div style="font-size:13px;color:var(--muted)">5:00 PM · Heritage Elementary</div>
-      <div style="display:inline-block;margin-top:8px;font-size:11px;font-weight:700;padding:2px 9px;border-radius:99px;background:var(--pack-lt);color:#7A1220">Pack 123</div>
     </div>
     <div style="background:var(--paper);border-radius:var(--r-lg);border:1px solid var(--bone);padding:18px 20px;box-shadow:var(--sh-sm)">
       <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:6px">May 25 · Sunday</div>
@@ -758,10 +756,6 @@ input, select, textarea { font-family: 'Source Sans 3', sans-serif; }
       <div style="display:inline-block;margin-top:8px;font-size:11px;font-weight:700;padding:2px 9px;border-radius:99px;background:#EEF2FB;color:#1A3A6B">District</div>
     </div>
     <div style="background:var(--paper);border-radius:var(--r-lg);border:1px solid var(--bone);padding:18px 20px;box-shadow:var(--sh-sm)">
-      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:6px">Jun 7 · Saturday</div>
-      <div style="font-size:15px;font-weight:600;color:var(--ink);margin-bottom:3px">Troop 456 Eagle Court of Honor</div>
-      <div style="font-size:13px;color:var(--muted)">2:00 PM · National City Library</div>
-      <div style="display:inline-block;margin-top:8px;font-size:11px;font-weight:700;padding:2px 9px;border-radius:99px;background:var(--troop-lt);color:#0D3020">Troop 456</div>
     </div>
   </div>
   <!-- Unit spotlight grid -->
@@ -831,7 +825,7 @@ input, select, textarea { font-family: 'Source Sans 3', sans-serif; }
         <div class="cal-header">
           <div class="cal-nav">
             <button class="cal-arrow" onclick="navCal(-1)">‹</button>
-            <div class="cal-month-title" id="masterCalTitle">May 2026</div>
+            <button onclick="districtAddEvent()" style="background:#1B4332;color:white;border:none;border-radius:8px;padding:7px 14px;font-size:12.5px;font-weight:700;cursor:pointer;margin-right:12px">+ District Event (admin)</button><div class="cal-month-title" id="masterCalTitle">May 2026</div>
             <button class="cal-arrow" onclick="navCal(1)">›</button>
           </div>
           <div class="cal-header-right">
@@ -869,11 +863,6 @@ input, select, textarea { font-family: 'Source Sans 3', sans-serif; }
       <div class="upcoming-card">
         <h3>Coming up</h3>
         <div class="upcoming-ev"><div class="uev-date">Thu May 14</div><div class="uev-name">District Roundtable</div><div class="uev-unit">Sweetwater District · 7 PM</div></div>
-        <div class="upcoming-ev"><div class="uev-date">Mon May 19</div><div class="uev-name">Pack 123 Den Meeting</div><div class="uev-unit">Pack 123 · 6:30 PM · Heritage Elem</div></div>
-        <div class="upcoming-ev"><div class="uev-date">Sat May 23</div><div class="uev-name">Pack 123 Blue &amp; Gold</div><div class="uev-unit">Pack 123 · 5 PM</div></div>
-        <div class="upcoming-ev"><div class="uev-date">Sun May 25</div><div class="uev-name">District Pinewood Derby</div><div class="uev-unit">Sweetwater District · 10 AM</div></div>
-        <div class="upcoming-ev"><div class="uev-date">Mon Jun 2</div><div class="uev-name">Troop 456 Court of Honor</div><div class="uev-unit">Troop 456 · 7 PM</div></div>
-        <div class="upcoming-ev" style="border:none"><div class="uev-date">Fri–Sun Jun 14</div><div class="uev-name">Pack 123 Campout — Palomar</div><div class="uev-unit">Pack 123 · Palomar Mtn State Park</div></div>
       </div>
       <!-- iCal subscribe -->
       <div class="ical-card">
@@ -893,78 +882,16 @@ input, select, textarea { font-family: 'Source Sans 3', sans-serif; }
 <div class="page-section" id="view-news">
 <div class="wrap">
   <div class="sec-hdr"><h2>District News</h2><p>Announcements, deadlines, and updates from Sweetwater District leadership</p></div>
-  <div class="news-grid">
-    <div class="news-main">
-      <div class="news-card news-card-featured">
-        <div class="news-card-img">🏆</div>
-        <div class="news-card-body">
-          <div class="news-tag" style="color:var(--forest);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase">District Award</div>
-          <h3>Pack 123 Wins 2026 District Award of Merit</h3>
-          <p>Pack 123 from Chula Vista has been selected as this year's recipient of the Sweetwater District Award of Merit, recognizing outstanding unit service, membership growth of 22%, and exceptional youth programming throughout the 2025–26 scouting year.</p>
-          <div class="news-date">May 10, 2026</div>
-        </div>
-      </div>
-      <div class="news-card" style="padding:20px 24px;cursor:pointer">
-        <div class="news-list-card">
-          <div class="news-list-icon">📋</div>
-          <div class="news-list-body">
-            <div class="news-tag" style="color:var(--red);font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:5px">Important Deadline</div>
-            <h4>2025–26 Recharter deadline is June 30th</h4>
-            <p>All units must complete recharter through my.Scouting.org no later than June 30, 2026. Units not rechartered by this date will be unable to participate in council activities until renewal is complete. Contact your Unit Commissioner with questions.</p>
-            <div class="news-list-date">May 1, 2026</div>
-          </div>
-        </div>
-      </div>
-      <div class="news-card" style="padding:20px 24px">
-        <div class="news-list-card">
-          <div class="news-list-icon">🎓</div>
-          <div class="news-list-body">
-            <h4>Wood Badge Course — July 18–20 &amp; Aug 1–3</h4>
-            <p>SDIC is hosting a Wood Badge course this summer. Registration is open to all registered adult leaders. Deadline to register is June 15th. Partial and full scholarships available — contact your District Executive.</p>
-            <div class="news-list-date">April 28, 2026</div>
-          </div>
-        </div>
-      </div>
-      <div class="news-card" style="padding:20px 24px">
-        <div class="news-list-card">
-          <div class="news-list-icon">⭐</div>
-          <div class="news-list-body">
-            <h4>Eagle Scout Congratulations — 7 Eagles in Q1 2026</h4>
-            <p>Sweetwater District is proud to recognize 7 Eagle Scouts from Q1 2026: James Kim (Troop 456), Sofia Nguyen (Troop 212), Marcus Brown (Troop 89)... and four more. Courts of Honor are listed in the district calendar.</p>
-            <div class="news-list-date">April 15, 2026</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="news-sidebar">
-      <div class="sidebar-card">
-        <h3>Key Deadlines</h3>
-        <div class="deadline-item"><div class="deadline-dot urgent"></div><div><div class="deadline-name">Recharter due</div><div class="deadline-date">June 30, 2026</div></div></div>
-        <div class="deadline-item"><div class="deadline-dot soon"></div><div><div class="deadline-name">Wood Badge registration</div><div class="deadline-date">June 15, 2026</div></div></div>
-        <div class="deadline-item"><div class="deadline-dot soon"></div><div><div class="deadline-name">District award nominations</div><div class="deadline-date">June 1, 2026</div></div></div>
-        <div class="deadline-item"><div class="deadline-dot ok"></div><div><div class="deadline-name">Summer camp balance due</div><div class="deadline-date">May 30, 2026</div></div></div>
-        <div class="deadline-item" style="border:none"><div class="deadline-dot ok"></div><div><div class="deadline-name">Roundtable — next meeting</div><div class="deadline-date">June 12, 2026 · 7 PM</div></div></div>
-      </div>
-      <div class="sidebar-card">
-        <h3>District Contacts</h3>
-        <div class="contact-item"><div class="contact-avatar">DE</div><div><strong>District Executive</strong>Name withheld — contact via email</div></div>
-        <div class="contact-item"><div class="contact-avatar">DC</div><div><strong>District Commissioner</strong>commissioner@sweetwaterbsa.org</div></div>
-        <div class="contact-item" style="border:none"><div class="contact-avatar">RT</div><div><strong>Roundtable Commissioner</strong>roundtable@sweetwaterbsa.org</div></div>
-      </div>
-      <div class="sidebar-card" style="background:var(--forest);border-color:transparent">
-        <h3 style="color:white;font-family:'Playfair Display',serif">📅 Next Roundtable</h3>
-        <div style="font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--khaki);margin:10px 0 4px">June 12, 2026</div>
-        <div style="font-size:13px;color:rgba(255,255,255,0.65);margin-bottom:14px">7:00 PM · Bonita Library Community Room<br>1539 Sweetwater Rd, National City</div>
-        <button style="width:100%;background:var(--khaki);color:var(--ink);border:none;padding:9px;border-radius:8px;font-size:13px;font-weight:700">Add to Calendar</button>
-      </div>
+  <div id="news-list-container">
+    <div style="background:var(--paper);border-radius:var(--r-lg);border:1px solid var(--bone);padding:64px 32px;text-align:center;color:var(--muted)">
+      <div style="font-size:3rem;margin-bottom:14px">📰</div>
+      <div style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--ink);margin-bottom:8px">No district news yet</div>
+      <div style="font-size:14px;max-width:400px;margin:0 auto;line-height:1.6">District announcements and news will appear here as district leadership posts updates.</div>
     </div>
   </div>
 </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════════════ -->
-<!-- FIND A UNIT -->
-<!-- ══════════════════════════════════════════════════════════════════ -->
 <div class="page-section" id="view-findaunit">
 <div class="wrap">
   <div class="sec-hdr"><h2>Find a Unit</h2><p>All 34 units in the Sweetwater District — click a pin or use the filters to find your match</p></div>
@@ -1040,12 +967,6 @@ input, select, textarea { font-family: 'Source Sans 3', sans-serif; }
       <table class="dash-table">
         <thead><tr><th>Unit</th><th>Type</th><th>City</th><th>Status</th><th>Members</th></tr></thead>
         <tbody>
-          <tr><td><strong>Pack 123</strong></td><td>Pack</td><td>Chula Vista</td><td><span class="recharter-pill pill-ok">Complete</span></td><td>42</td></tr>
-          <tr><td><strong>Troop 456</strong></td><td>Troop (B)</td><td>National City</td><td><span class="recharter-pill pill-ok">Complete</span></td><td>31</td></tr>
-          <tr><td><strong>Pack 78</strong></td><td>Pack</td><td>Bonita</td><td><span class="recharter-pill pill-due">In progress</span></td><td>28</td></tr>
-          <tr><td><strong>Troop 212</strong></td><td>Troop (G)</td><td>Eastlake</td><td><span class="recharter-pill pill-due">In progress</span></td><td>19</td></tr>
-          <tr><td><strong>Crew 14</strong></td><td>Crew</td><td>Chula Vista</td><td><span class="recharter-pill pill-late">Not started</span></td><td>11</td></tr>
-          <tr><td><strong>Pack 501</strong></td><td>Pack</td><td>National City</td><td><span class="recharter-pill pill-ok">Complete</span></td><td>37</td></tr>
         </tbody>
       </table>
     </div>
@@ -1068,13 +989,6 @@ input, select, textarea { font-family: 'Source Sans 3', sans-serif; }
   <div class="dash-card">
     <h3>Calendar event activity — events added this month by unit</h3>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:4px">
-      <div style="background:var(--parchment);border-radius:var(--r);padding:12px;text-align:center"><div style="font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--forest)">6</div><div style="font-size:12px;color:var(--muted)">Pack 123</div></div>
-      <div style="background:var(--parchment);border-radius:var(--r);padding:12px;text-align:center"><div style="font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--forest)">4</div><div style="font-size:12px;color:var(--muted)">Troop 456</div></div>
-      <div style="background:var(--parchment);border-radius:var(--r);padding:12px;text-align:center"><div style="font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--forest)">3</div><div style="font-size:12px;color:var(--muted)">Pack 501</div></div>
-      <div style="background:var(--parchment);border-radius:var(--r);padding:12px;text-align:center"><div style="font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--forest)">3</div><div style="font-size:12px;color:var(--muted)">Troop 212</div></div>
-      <div style="background:var(--parchment);border-radius:var(--r);padding:12px;text-align:center"><div style="font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--forest)">2</div><div style="font-size:12px;color:var(--muted)">Pack 78</div></div>
-      <div style="background:var(--parchment);border-radius:var(--r);padding:12px;text-align:center"><div style="font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--forest)">1</div><div style="font-size:12px;color:var(--muted)">Crew 14</div></div>
-      <div style="background:var(--parchment);border-radius:var(--r);padding:12px;text-align:center;opacity:.5"><div style="font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--muted)">0</div><div style="font-size:12px;color:var(--muted)">Ship 9</div></div>
     </div>
   </div>
 </div>
@@ -1092,19 +1006,19 @@ input, select, textarea { font-family: 'Source Sans 3', sans-serif; }
       <div class="training-icon">🛡️</div>
       <div class="training-name">Youth Protection Training <span class="training-badge">Required</span></div>
       <div class="training-desc">Mandatory for all registered adults. Must be renewed every 2 years. Complete online at MyScouting.org — takes approximately 90 minutes.</div>
-      <a href="#" class="training-link">Take YPT →</a>
+      <a href="https://my.scouting.org" target="_blank" rel="noopener" class="training-link">Take YPT →</a>
     </div>
     <div class="training-card">
       <div class="training-icon">🎓</div>
       <div class="training-name">Position-Specific Training <span class="training-badge">Required</span></div>
       <div class="training-desc">Den leaders, Cubmasters, and Scoutmasters must complete position-specific online modules before working with youth unsupervised.</div>
-      <a href="#" class="training-link">View courses →</a>
+      <a href="https://my.scouting.org" target="_blank" rel="noopener" class="training-link">View courses →</a>
     </div>
     <div class="training-card">
       <div class="training-icon">🏕️</div>
       <div class="training-name">Hazardous Weather <span class="training-badge">Required</span></div>
       <div class="training-desc">Required for any leader taking youth on an overnight camping activity. Short online course through MyScouting. Good for 2 years.</div>
-      <a href="#" class="training-link">Take course →</a>
+      <a href="https://my.scouting.org" target="_blank" rel="noopener" class="training-link">Take course →</a>
     </div>
   </div>
   <h3 style="font-size:1.2rem;color:var(--forest);margin-bottom:20px;font-family:'Playfair Display',serif">Recommended training</h3>
@@ -1113,19 +1027,19 @@ input, select, textarea { font-family: 'Source Sans 3', sans-serif; }
       <div class="training-icon">🪵</div>
       <div class="training-name">Wood Badge</div>
       <div class="training-desc">The premier leadership training experience for all registered adult leaders. Next SDIC course: July 18–20 &amp; Aug 1–3, 2026.</div>
-      <a href="#" class="training-link">Register →</a>
+      <a href="https://www.sdicbsa.org" target="_blank" rel="noopener" class="training-link">Register →</a>
     </div>
     <div class="training-card">
       <div class="training-icon">🦅</div>
       <div class="training-name">NYLT — Youth Leadership</div>
       <div class="training-desc">National Youth Leadership Training for Scouts 13+. Develops leadership skills in a scout-led patrol setting over 6 days.</div>
-      <a href="#" class="training-link">Learn more →</a>
+      <a href="https://www.scouting.org/training/adult" target="_blank" rel="noopener" class="training-link">Learn more →</a>
     </div>
     <div class="training-card">
       <div class="training-icon">⚙️</div>
       <div class="training-name">Baloo Training</div>
       <div class="training-desc">Required for any adult who plans or conducts a Cub Scout pack overnight camping experience. One-day in-person course.</div>
-      <a href="#" class="training-link">Find a date →</a>
+      <a href="https://www.sdicbsa.org" target="_blank" rel="noopener" class="training-link">Find a date →</a>
     </div>
   </div>
   <h3 style="font-size:1.2rem;color:var(--forest);margin-bottom:20px;font-family:'Playfair Display',serif">Resource library</h3>
@@ -1159,31 +1073,31 @@ input, select, textarea { font-family: 'Source Sans 3', sans-serif; }
       </div>
       <div>
         <h4>For families</h4>
-        <a href="#" class="footer-link" onclick="showView('findaunit',null)">Find a unit</a>
-        <a href="#" class="footer-link">BeAScout.org</a>
-        <a href="#" class="footer-link">What is Scouting?</a>
-        <a href="#" class="footer-link">Financial assistance</a>
+        <a href="javascript:void(0)" class="footer-link" onclick="showView('findaunit',null)">Find a unit</a>
+        <a href="https://beascout.scouting.org" target="_blank" rel="noopener" class="footer-link">BeAScout.org</a>
+        <a href="https://www.scouting.org" target="_blank" rel="noopener" class="footer-link">What is Scouting?</a>
+        <a href="https://www.sdicbsa.org" target="_blank" rel="noopener" class="footer-link">Financial assistance</a>
       </div>
       <div>
         <h4>For leaders</h4>
-        <a href="#" class="footer-link" onclick="showView('training',null)">Training &amp; resources</a>
-        <a href="#" class="footer-link">Recharter help</a>
-        <a href="#" class="footer-link">Roundtable info</a>
-        <a href="#" class="footer-link">Unit website login</a>
+        <a href="javascript:void(0)" class="footer-link" onclick="showView('training',null)">Training &amp; resources</a>
+        <a href="https://www.sdicbsa.org" target="_blank" rel="noopener" class="footer-link">Recharter help</a>
+        <a href="javascript:void(0)" onclick="showView('news',null)" class="footer-link">Roundtable info</a>
+        <a href="unit-template.html" class="footer-link">Build a unit website</a>
       </div>
       <div>
         <h4>District</h4>
-        <a href="#" class="footer-link" onclick="showView('news',null)">District news</a>
-        <a href="#" class="footer-link" onclick="showView('calendar',null)">Master calendar</a>
-        <a href="#" class="footer-link" onclick="showView('directory',null)">Unit directory</a>
-        <a href="#" class="footer-link">Commissioner service</a>
+        <a href="javascript:void(0)" class="footer-link" onclick="showView('news',null)">District news</a>
+        <a href="javascript:void(0)" class="footer-link" onclick="showView('calendar',null)">Master calendar</a>
+        <a href="javascript:void(0)" class="footer-link" onclick="showView('directory',null)">Unit directory</a>
+        <a href="https://www.scouting.org/commissioners/" target="_blank" rel="noopener" class="footer-link">Commissioner service</a>
       </div>
       <div>
         <h4>Council</h4>
         <a href="https://www.sdicbsa.org" class="footer-link" target="_blank">SDIC Website</a>
-        <a href="#" class="footer-link">MyScouting.org</a>
-        <a href="#" class="footer-link">Scoutbook</a>
-        <a href="#" class="footer-link">Camp Karankawa</a>
+        <a href="https://my.scouting.org" target="_blank" rel="noopener" class="footer-link">MyScouting.org</a>
+        <a href="https://www.scouting.org/scoutbook" target="_blank" rel="noopener" class="footer-link">Scoutbook</a>
+        <a href="https://www.sdicbsa.org" target="_blank" rel="noopener" class="footer-link">Council camps</a>
       </div>
     </div>
     <div class="footer-bottom">
@@ -1195,22 +1109,7 @@ input, select, textarea { font-family: 'Source Sans 3', sans-serif; }
 
 <script>
 // ── UNIT DATA ────────────────────────────────────────────────────────
-const UNITS = [
-  { num:'Pack 123', type:'pack',  city:'Chula Vista',   school:'Heritage Elementary', day:'Mondays',   time:'6:30 PM', members:42, website:true,  lat:52, lng:38 },
-  { num:'Pack 78',  type:'pack',  city:'Bonita',         school:'Sunnyside Elementary',day:'Tuesdays',  time:'6:00 PM', members:28, website:true,  lat:72, lng:30 },
-  { num:'Pack 201', type:'pack',  city:'Chula Vista',   school:'Castle Park Middle',  day:'Wednesdays',time:'6:30 PM', members:35, website:false, lat:45, lng:55 },
-  { num:'Pack 501', type:'pack',  city:'National City', school:'Ira Harbison Elem',   day:'Mondays',   time:'5:30 PM', members:37, website:true,  lat:28, lng:44 },
-  { num:'Pack 614', type:'pack',  city:'Eastlake',      school:'Eastlake Elem',       day:'Thursdays', time:'6:00 PM', members:44, website:false, lat:62, lng:62 },
-  { num:'Pack 703', type:'pack',  city:'Chula Vista',   school:'Vista Square Elem',   day:'Mondays',   time:'6:00 PM', members:31, website:true,  lat:40, lng:28 },
-  { num:'Troop 456',type:'troop', city:'National City', school:'Sweetwater High',     day:'Wednesdays',time:'7:00 PM', members:31, website:true,  lat:25, lng:50 },
-  { num:'Troop 89', type:'troop', city:'Chula Vista',   school:'Mater Dei Catholic',  day:'Tuesdays',  time:'7:00 PM', members:24, website:false, lat:50, lng:42 },
-  { num:'Troop 212',type:'troop', city:'Eastlake',      school:'Eastlake High',       day:'Mondays',   time:'7:00 PM', members:19, website:true,  lat:65, lng:58 },
-  { num:'Troop 310',type:'troop', city:'Bonita',         school:'Bonita Vista High',  day:'Thursdays', time:'7:00 PM', members:22, website:false, lat:75, lng:42 },
-  { num:'Troop 8',  type:'troop', city:'National City', school:'Granger Jr High',     day:'Wednesdays',time:'6:30 PM', members:17, website:false, lat:22, lng:36 },
-  { num:'Crew 14',  type:'crew',  city:'Chula Vista',   school:'Open — all teens',    day:'Fridays',   time:'7:00 PM', members:11, website:false, lat:55, lng:68 },
-  { num:'Crew 52',  type:'crew',  city:'Bonita',         school:'Open — all teens',   day:'Wednesdays',time:'7:00 PM', members:14, website:false, lat:78, lng:55 },
-  { num:'Ship 9',   type:'ship',  city:'National City', school:'Open — ages 14–21',   day:'Tuesdays',  time:'7:00 PM', members:16, website:false, lat:20, lng:58 },
-];
+const UNITS = [];
 
 const TYPE_COLORS = { pack:'#BE1E2D', troop:'#1B4332', crew:'#7C5A00', ship:'#1A3A6B' };
 const TYPE_LIGHT  = { pack:'#FDECEA', troop:'#EBF5F0', crew:'#FEF9EE', ship:'#EBF0FA' };
@@ -1239,6 +1138,10 @@ function renderHomeUnits() {
   const active = UNITS.filter(u => u.website).slice(0, 8);
   const container = document.getElementById('home-units');
   if (!container) return;
+  if (!active.length) {
+    container.parentElement.innerHTML = `<div style="grid-column:1/-1;background:var(--paper);border-radius:var(--r-lg);border:1px solid var(--bone);padding:32px;text-align:center;color:var(--muted)"><div style="font-size:2rem;margin-bottom:8px">🏕️</div><div style="font-weight:600;color:var(--ink);margin-bottom:4px">No units registered yet</div><div style="font-size:13px">Units will appear here after they complete setup at roundtable.</div></div>`;
+    return;
+  }
   container.parentElement.innerHTML = active.map(u => `
     <div onclick="showView('directory',null)" style="background:var(--paper);border-radius:var(--r-lg);border:1px solid var(--bone);padding:16px;text-align:center;cursor:pointer;transition:all 0.2s;box-shadow:var(--sh-sm)"
       onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--sh-md)'"
@@ -1299,6 +1202,11 @@ function renderDirectory() {
 
 // ── FIND A UNIT PANEL ──────────────────────────────────────────────────
 function renderFindAUnit() {
+  if (!UNITS.length) {
+    document.getElementById('findResults').innerHTML = '<div style="padding:32px;text-align:center;color:var(--muted)"><div style=\"font-size:2rem;margin-bottom:8px\">🔍</div><div style=\"font-weight:600\">No units registered yet</div><div style=\"font-size:13px;margin-top:4px\">Units will appear here after they join at roundtable.</div></div>';
+    document.getElementById('mapPins').innerHTML = '';
+    return;
+  }
   document.getElementById('findResults').innerHTML = UNITS.slice(0,10).map((u,i) => `
     <div class="find-result ${i===0?'selected':''}" onclick="selectUnit(this,'${u.num}')">
       <div class="find-result-top">
@@ -1330,24 +1238,92 @@ function renderMapPins() {
 }
 
 // ── MASTER CALENDAR ────────────────────────────────────────────────────
-let masterYear = 2026, masterMonth = 4;
+let masterYear = new Date().getFullYear(), masterMonth = new Date().getMonth();
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-const masterEvents = {
-  '2026-5-4':  [{name:'Pack 123 den mtg',cls:'ev-pack'},{name:'Troop 456 mtg',cls:'ev-troop'}],
-  '2026-5-7':  [{name:'Pack 501 den mtg',cls:'ev-pack'}],
-  '2026-5-11': [{name:'Pack 123 den mtg',cls:'ev-pack'},{name:'Pack 78 mtg',cls:'ev-pack'}],
-  '2026-5-14': [{name:'District Roundtable',cls:'ev-district'}],
-  '2026-5-15': [{name:'Today',cls:'ev-district'}],
-  '2026-5-18': [{name:'Pack 123 den mtg',cls:'ev-pack'},{name:'Troop 456 mtg',cls:'ev-troop'}],
-  '2026-5-19': [{name:'Pack 614 mtg',cls:'ev-pack'}],
-  '2026-5-23': [{name:'Pack 123 Blue & Gold',cls:'ev-pack'}],
-  '2026-5-25': [{name:'District Pinewood Derby',cls:'ev-district'}],
-  '2026-5-26': [{name:'Pack 201 campout',cls:'ev-pack'},{name:'Troop 89 campout',cls:'ev-troop'}],
-  '2026-5-28': [{name:'Ship 9 meeting',cls:'ev-ship'}],
-  '2026-6-2':  [{name:'Troop 456 Court of Honor',cls:'ev-troop'}],
-  '2026-6-7':  [{name:'Pack 123 den mtg',cls:'ev-pack'},{name:'District Roundtable',cls:'ev-district'}],
-  '2026-6-14': [{name:'Pack 123 Campout',cls:'ev-pack'},{name:'Crew 14 campout',cls:'ev-crew'}],
-};
+const masterEvents = {};
+
+// ── CALENDAR SYNC (Phase 1: shared localStorage on same origin) ────────
+// UPLINK:   units publish to 'sw_district_shared_events' → shown here
+// DOWNLINK: district admin broadcasts via 'sw_district_broadcast' → units show it
+// COUNCIL SERVER: replace both with /api/district/events endpoints
+function loadSharedEvents() {
+  try { return JSON.parse(localStorage.getItem('sw_district_shared_events')||'[]'); }
+  catch(e) { return []; }
+}
+function loadBroadcast() {
+  try { return JSON.parse(localStorage.getItem('sw_district_broadcast')||'[]'); }
+  catch(e) { return []; }
+}
+function rebuildMasterEvents() {
+  for (const k in masterEvents) delete masterEvents[k];
+  // Events published by units (uplink)
+  loadSharedEvents().forEach(e => {
+    const dt = new Date(e.date + 'T00:00');
+    if (isNaN(dt)) return;
+    const key = `${dt.getFullYear()}-${dt.getMonth()+1}-${dt.getDate()}`;
+    if (!masterEvents[key]) masterEvents[key] = [];
+    masterEvents[key].push({ name: e.name, cls: 'ev-unit', unit: e.unit, time: e.time, date: e.date, raw: e });
+  });
+  // Events broadcast by the district (downlink — also shown here)
+  loadBroadcast().forEach(e => {
+    const dt = new Date(e.date + 'T00:00');
+    if (isNaN(dt)) return;
+    const key = `${dt.getFullYear()}-${dt.getMonth()+1}-${dt.getDate()}`;
+    if (!masterEvents[key]) masterEvents[key] = [];
+    masterEvents[key].push({ name: e.name, cls: 'ev-district', unit: 'Sweetwater District', time: e.time, date: e.date, raw: e });
+  });
+  renderComingUp();
+}
+function renderComingUp() {
+  const card = document.querySelector('.upcoming-card');
+  if (!card) return;
+  const now = new Date(); now.setHours(0,0,0,0);
+  const all = [];
+  loadSharedEvents().forEach(e => all.push({...e, src: e.unit || 'Unit'}));
+  loadBroadcast().forEach(e => all.push({...e, src: 'Sweetwater District'}));
+  const up = all.filter(e => new Date(e.date+'T00:00') >= now)
+                .sort((a,b) => a.date.localeCompare(b.date)).slice(0, 6);
+  let inner = '<h3>Coming up</h3>';
+  if (!up.length) {
+    inner += '<div style="color:#999;font-size:13px;padding:8px 0">No events yet. Events published by units appear here automatically.</div>';
+  } else {
+    inner += up.map(e => {
+      const dt = new Date(e.date+'T00:00');
+      const ds = dt.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+      return `<div class="upcoming-ev"><div class="uev-date">${ds}</div><div class="uev-name">${e.name}</div><div class="uev-unit">${e.src}${e.time?' · '+fmtT(e.time):''}</div></div>`;
+    }).join('');
+  }
+  card.innerHTML = inner;
+}
+function fmtT(t) {
+  if (!t) return '';
+  const [h,m] = t.split(':').map(Number);
+  return `${h%12||12}:${String(m).padStart(2,'0')} ${h>=12?'PM':'AM'}`;
+}
+
+// ── DISTRICT ADMIN: broadcast an event to ALL unit calendars ──────────
+const DISTRICT_PW = 'sweetwater26';
+function districtAddEvent() {
+  const pw = prompt('District admin password:');
+  if (pw !== DISTRICT_PW) { if (pw !== null) alert('Incorrect password.'); return; }
+  const name = prompt('Event name (e.g. District Roundtable):');
+  if (!name) return;
+  const date = prompt('Date (YYYY-MM-DD):', new Date(Date.now()+86400000*7).toISOString().split('T')[0]);
+  if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) { alert('Please use YYYY-MM-DD format.'); return; }
+  const time = prompt('Time (HH:MM, 24-hour, or leave blank):', '19:00') || '';
+  const bc = loadBroadcast();
+  bc.push({ id: Date.now().toString(36), name, date, time, added: Date.now() });
+  localStorage.setItem('sw_district_broadcast', JSON.stringify(bc));
+  rebuildMasterEvents(); renderMasterCal();
+  alert('✅ Broadcast! This event now appears on this calendar AND on every unit website calendar (open a unit page to see it arrive live).');
+}
+
+// ── LIVE SYNC: refresh when a unit page publishes an event ────────────
+window.addEventListener('storage', function(e) {
+  if (e.key === 'sw_district_shared_events' || e.key === 'sw_district_broadcast') {
+    rebuildMasterEvents(); renderMasterCal();
+  }
+});
 
 function navCal(dir) {
   masterMonth += dir;
@@ -1372,7 +1348,7 @@ function renderMasterCal() {
     const more  = evs.length>2 ? `<div class="cal-more">+${evs.length-2} more</div>` : '';
     html += `<div class="cal-cell${isToday?' today':''}">
       <div class="cal-cell-num">${d}</div>
-      ${shown.map(e=>`<div class="cal-event ${e.cls}">${e.name}</div>`).join('')}
+      ${shown.map(e=>`<div class="cal-event ${e.cls}" title="${e.unit||''}${e.time?' · '+fmtT(e.time):''}">${e.name}</div>`).join('')}
       ${more}
     </div>`;
   }
@@ -1400,9 +1376,45 @@ document.querySelectorAll('.find-filter-opt').forEach(btn => {
 
 // ── INIT ─────────────────────────────────────────────────────────────
 renderHomeUnits();
+rebuildMasterEvents();
 renderMasterCal();
 renderDirectory();
 renderFindAUnit();
+
+// Hash navigation: index.html#calendar opens the calendar view directly
+(function() {
+  const h = location.hash.replace('#','');
+  const valid = ['directory','calendar','news','findaunit','dashboard','training'];
+  if (valid.includes(h)) {
+    const btns = document.querySelectorAll('.nav-tab');
+    let target = null;
+    btns.forEach(b => { if ((b.getAttribute('onclick')||'').includes("'"+h+"'")) target = b; });
+    showView(h, target);
+  }
+})();
+
+// ── STATS from UNITS array ───────────────────────────────────────────────
+function refreshStats() {
+  const su = document.getElementById('stat-units');
+  const sy = document.getElementById('stat-youth');
+  const sv = document.getElementById('stat-volunteers');
+  if (su) su.textContent = UNITS.length;
+  if (sy) sy.textContent = UNITS.reduce((a, u) => a + (u.members || 0), 0).toLocaleString();
+  if (sv) sv.textContent = Math.round(UNITS.reduce((a, u) => a + (u.members || 0), 0) * 0.35);
+}
+
+refreshStats();
+
+// ── STATS from UNITS ─────────────────────────────────────────────────────
+function refreshStats() {
+  const su = document.getElementById('stat-units');
+  const sy = document.getElementById('stat-youth');
+  const sv = document.getElementById('stat-volunteers');
+  if (su) su.textContent = UNITS.length;
+  if (sy) sy.textContent = UNITS.reduce((a,u)=>a+(u.members||0),0).toLocaleString();
+  if (sv) sv.textContent = Math.round(UNITS.reduce((a,u)=>a+(u.members||0),0)*0.35);
+}
+refreshStats();
 </script>
 </body>
 </html>

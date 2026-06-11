@@ -99,8 +99,13 @@ input, textarea, select { font-family: 'DM Sans', sans-serif; }
   flex-shrink: 0;
 }
 .nav-unit-name { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--forest); }
-.nav-tabs { display: flex; align-items: center; gap: 2px; flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; }
-.nav-tabs::-webkit-scrollbar { display: none; }
+.nav-inner { flex-wrap: wrap; height: auto; padding: 0; }
+.nav-row1 { display: flex; align-items: center; width: 100%; height: 56px; padding: 0 24px; gap: 0; }
+.nav-row2 { display: flex; align-items: center; width: 100%; min-height: 38px; padding: 0 24px 0 108px; border-top: 1px solid var(--cream-dark); background: white; overflow-x: auto; scrollbar-width: none; gap: 2px; flex-wrap: nowrap; }
+.nav-row2::-webkit-scrollbar { display: none; }
+.nav-row2:empty { display: none; }
+.nav-tabs-required { display: flex; align-items: center; gap: 2px; flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+.nav-tabs-required::-webkit-scrollbar { display: none; }
 .nav-tab {
   padding: 8px 14px;
   font-size: 13px;
@@ -134,7 +139,7 @@ input, textarea, select { font-family: 'DM Sans', sans-serif; }
   margin-right: 5px;
   vertical-align: middle;
 }
-.nav-actions { display: flex; gap: 8px; flex-shrink: 0; align-items: center; background: white; position: relative; z-index: 2; padding-left: 8px; box-shadow: -20px 0 16px 8px white; }
+.nav-actions { display: flex; gap: 8px; flex-shrink: 0; align-items: center; }
 .btn-join {
   background: var(--unit-accent);
   color: white;
@@ -716,41 +721,12 @@ input, textarea, select { font-family: 'DM Sans', sans-serif; }
 }
 
 
-/* ── ADMIN MODALS ──────────────────────────────────────────────── */
 .adm-overlay {
   position: fixed; inset: 0; z-index: 8000;
   background: rgba(0,0,0,0.45); backdrop-filter: blur(3px);
   display: none; justify-content: flex-end;
 }
 .adm-overlay.open { display: flex; }
-
-.adm-panel {
-  width: min(500px, 100vw); height: 100vh;
-  background: white; display: flex; flex-direction: column;
-  box-shadow: -8px 0 40px rgba(0,0,0,0.25);
-  overflow: hidden;
-}
-.adm-head {
-  background: #1A1A1A; padding: 18px 24px;
-  display: flex; align-items: center; justify-content: space-between;
-  flex-shrink: 0;
-}
-.adm-head-title {
-  font-family: 'DM Serif Display', serif; font-size: 1.15rem; color: white;
-}
-.adm-head-close {
-  background: rgba(255,255,255,0.12); border: none; color: white;
-  width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
-  font-size: 1rem; display: flex; align-items: center; justify-content: center;
-  transition: background 0.15s;
-}
-.adm-head-close:hover { background: rgba(255,255,255,0.25); }
-
-.adm-body { flex: 1; overflow-y: auto; padding: 28px 24px; }
-.adm-foot {
-  padding: 16px 24px; border-top: 1px solid var(--border);
-  display: flex; gap: 10px; justify-content: flex-end; flex-shrink: 0;
-}
 
 .adm-fg { margin-bottom: 18px; }
 .adm-fg label {
@@ -937,7 +913,7 @@ input, textarea, select { font-family: 'DM Sans', sans-serif; }
   font-family:'DM Serif Display',serif;font-size:3rem;color:white;
   background:linear-gradient(135deg,var(--forest-mid),var(--forest)); }
 .ldr-info { padding:22px 24px; }
-.ldr-name { font-family:'DM Serif Display',serif;font-size:1.4rem;color:var(--ink);margin-bottom:3px; }
+.ldr-modal-name { font-family:'DM Serif Display',serif;font-size:1.4rem;color:var(--charcoal);margin-bottom:3px; }
 .ldr-role-txt { font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;
   letter-spacing:.06em;margin-bottom:18px; }
 .ldr-link { display:flex;align-items:center;gap:10px;padding:11px 13px;
@@ -1203,12 +1179,12 @@ input, textarea, select { font-family: 'DM Sans', sans-serif; }
 </div><!-- /setupOverlay -->
 
 <div class="district-banner">
-  <span>⚜️ &nbsp;Sweetwater District · San Diego Imperial Council</span>
+  <span style="cursor:pointer" onclick="goDistrict('')">⚜️ &nbsp;Sweetwater District · San Diego Imperial Council</span>
   <div class="banner-links">
-    <a href="#">District Calendar</a>
-    <a href="#">Find a Unit</a>
-    <a href="#">Training</a>
-    <a href="#">Council Website</a>
+    <a href="javascript:void(0)" onclick="goDistrict('calendar')">District Calendar</a>
+    <a href="javascript:void(0)" onclick="goDistrict('findaunit')">Find a Unit</a>
+    <a href="https://my.scouting.org" target="_blank" rel="noopener">Training</a>
+    <a href="https://www.sdicbsa.org" target="_blank" rel="noopener">Council Website</a>
   </div>
 </div>
 
@@ -1224,30 +1200,33 @@ input, textarea, select { font-family: 'DM Sans', sans-serif; }
 
 <!-- MAIN NAV -->
 <nav class="main-nav" id="mainNav">
-  <div class="nav-inner">
+  <!-- Row 1: brand + required tabs + admin actions -->
+  <div class="nav-row1">
     <div class="nav-brand">
       <div class="nav-emblem" id="cfg-emblem">P123</div>
       <span class="nav-unit-name" id="cfg-unit-name">Pack 123</span>
     </div>
-    <div class="nav-tabs" id="navTabs">
+    <div class="nav-tabs-required" id="navTabsRequired">
       <button class="nav-tab active" onclick="showSection('home', this)">Home</button>
       <button class="nav-tab" onclick="showSection('calendar', this)">Calendar</button>
       <button class="nav-tab" onclick="showSection('leadership', this)">Leadership</button>
       <button class="nav-tab" onclick="showSection('join', this)">Join Us</button>
       <button class="nav-tab" onclick="showSection('announcements', this)">Announcements</button>
-      <!-- Optional tabs -->
-      <button class="nav-tab optional-tab" id="tab-gallery" onclick="showSection('gallery', this)">Photos</button>
-      <button class="nav-tab optional-tab" id="tab-achievements" onclick="showSection('achievements', this)">Achievements</button>
-      <button class="nav-tab optional-tab" id="tab-camping" onclick="showSection('camping', this)">Camping Log</button>
-      <button class="nav-tab optional-tab" id="tab-service" onclick="showSection('service', this)">Service</button>
-      <button class="nav-tab optional-tab" id="tab-volunteer" onclick="showSection('volunteer', this)">Volunteer</button>
-      <button class="nav-tab optional-tab" id="tab-documents" onclick="showSection('documents', this)">Documents</button>
-      <button class="nav-tab optional-tab" id="tab-wherewemeet" onclick="showSection('wherewemeet', this)">Where We Meet</button>
     </div>
     <div class="nav-actions">
       <button class="btn-admin" id="adminToggle" onclick="toggleAdmin()">Admin</button>
       <button class="btn-join" onclick="showSection('join', document.querySelector('[onclick*=join]'))">Join Us</button>
     </div>
+  </div>
+  <!-- Row 2: optional tabs -->
+  <div class="nav-row2" id="navTabsOptional">
+    <button class="nav-tab optional-tab" id="tab-gallery" onclick="showSection('gallery', this)">Photos</button>
+    <button class="nav-tab optional-tab" id="tab-achievements" onclick="showSection('achievements', this)">Achievements</button>
+    <button class="nav-tab optional-tab" id="tab-camping" onclick="showSection('camping', this)">Camping Log</button>
+    <button class="nav-tab optional-tab" id="tab-service" onclick="showSection('service', this)">Service</button>
+    <button class="nav-tab optional-tab" id="tab-volunteer" onclick="showSection('volunteer', this)">Volunteer</button>
+    <button class="nav-tab optional-tab" id="tab-documents" onclick="showSection('documents', this)">Documents</button>
+    <button class="nav-tab optional-tab" id="tab-wherewemeet" onclick="showSection('wherewemeet', this)">Where We Meet</button>
   </div>
 </nav>
 
@@ -1334,11 +1313,11 @@ input, textarea, select { font-family: 'DM Sans', sans-serif; }
         <a href="https://www.myscouting.org" target="_blank" class="quick-link">
           <span class="quick-link-icon">🎓</span> MyScouting Training
         </a>
-        <a href="#" class="quick-link">
+        <a href="https://www.scouting.org/health-and-safety/ahmr/" target="_blank" rel="noopener" class="quick-link">
           <span class="quick-link-icon">📋</span> Annual Health Form
         </a>
-        <a href="#" class="quick-link editable" contenteditable="false">
-          <span class="quick-link-icon">💬</span> Pack GroupMe Chat
+        <a href="javascript:void(0)" onclick="showToastSafe('Ask your unit leader for the group chat invite link')" class="quick-link">
+          <span class="quick-link-icon">💬</span> Unit Group Chat
         </a>
       </div>
     </div>
@@ -1538,6 +1517,9 @@ input, textarea, select { font-family: 'DM Sans', sans-serif; }
       <div style="font-size:14px">Click <strong>+ Post Announcement</strong> above to add your first update for families.</div>
     </div>
   </div>
+
+</div><!-- /section-wrap -->
+</div><!-- /section-announcements -->
 
 <!-- ═══════════════════════════════════════════════════════════════════ -->
 <!-- PHOTO GALLERY -->
@@ -1859,23 +1841,23 @@ input, textarea, select { font-family: 'DM Sans', sans-serif; }
       </div>
       <div>
         <h4>Quick Links</h4>
-        <a href="#" class="footer-link">Scoutbook</a>
-        <a href="#" class="footer-link">BeAScout.org</a>
-        <a href="#" class="footer-link">MyScouting Training</a>
-        <a href="#" class="footer-link">SDIC Council</a>
+        <a href="https://www.scouting.org/scoutbook" target="_blank" rel="noopener" class="footer-link">Scoutbook</a>
+        <a href="https://beascout.scouting.org" target="_blank" rel="noopener" class="footer-link">BeAScout.org</a>
+        <a href="https://my.scouting.org" target="_blank" rel="noopener" class="footer-link">MyScouting Training</a>
+        <a href="https://www.sdicbsa.org" target="_blank" rel="noopener" class="footer-link">SDIC Council</a>
       </div>
       <div>
         <h4>Unit Pages</h4>
-        <a href="#" class="footer-link">Calendar</a>
-        <a href="#" class="footer-link">Leadership</a>
-        <a href="#" class="footer-link">Join Us</a>
-        <a href="#" class="footer-link">Documents</a>
+        <a href="javascript:void(0)" onclick="showSection('calendar', null)" class="footer-link">Calendar</a>
+        <a href="javascript:void(0)" onclick="showSection('leadership', null)" class="footer-link">Leadership</a>
+        <a href="javascript:void(0)" onclick="showSection('join', null)" class="footer-link">Join Us</a>
+        <a href="javascript:void(0)" onclick="showSection('documents', null)" class="footer-link">Documents</a>
       </div>
       <div>
         <h4>Contact</h4>
         <a id="cfg-footer-email" href="mailto:cubmaster@pack123.org" class="footer-link">cubmaster@pack123.org</a>
-        <a href="#" class="footer-link">Submit a photo</a>
-        <a href="#" class="footer-link">Report an issue</a>
+        <a href="javascript:void(0)" onclick="showSection('join', null)" class="footer-link">Contact us</a>
+        <a href="javascript:void(0)" onclick="goDistrict('')" class="footer-link">District home</a>
       </div>
     </div>
     <div class="footer-bottom">
@@ -1974,12 +1956,22 @@ function renderCal() {
   for (let i = firstDay - 1; i >= 0; i--) {
     html += `<div class="cal-cell other-month"><div class="cal-cell-num">${daysInPrevMonth - i}</div></div>`;
   }
+  // Read filter state
+  const unitOn = !!document.querySelector('.filter-unit.on');
+  const districtOn = !!document.querySelector('.filter-district.on');
+
   // Current month days
   for (let d = 1; d <= daysInMonth; d++) {
     const isToday = calYear === today.getFullYear() && calMonth === today.getMonth() && d === today.getDate();
     const key = `${calYear}-${calMonth+1}-${d}`;
     const dayEvents = events[key] || [];
-    let evHTML = dayEvents.map(e =>
+    // Apply filter
+    const visibleEvts = dayEvents.filter(e => {
+      if (e.type === 'district' && !districtOn) return false;
+      if ((e.type === 'unit' || e.type === 'outing') && !unitOn) return false;
+      return true;
+    });
+    let evHTML = visibleEvts.map(e =>
       `<div class="cal-event event-${e.type}" title="${e.name}">${e.name}</div>`
     ).join('');
     html += `<div class="cal-cell ${isToday?'today':''} ${adminMode?'cal-cell-admin':''}" onclick="adminMode&&swOpenEvtOnDate('${key}')"><div class="cal-cell-num">${d}</div>${evHTML}</div>`;
@@ -2002,6 +1994,10 @@ function changeMonth(dir) {
 
 function toggleFilter(btn) {
   btn.classList.toggle('on');
+  renderCal();
+  // Also re-render upcoming list with filter applied
+  if (typeof swRenderEvts === 'function') swRenderEvts();
+  else if (typeof renderUpcomingList === 'function') renderUpcomingList();
 }
 
 renderCal();
@@ -2014,9 +2010,18 @@ function toggleTab(tabId, show) {
   const tabBtn = document.getElementById('tab-' + tabId);
   if (!tabBtn) return;
   tabBtn.style.display = show ? '' : 'none';
-  // Force immediate repaint so the tab bar updates right away
-  void document.getElementById('navTabs').offsetWidth;
-  // If we just hid the currently active tab, jump to Home
+  // Hide the optional row entirely if all tabs in it are hidden
+  const optRow = document.getElementById('navTabsOptional');
+  if (optRow) {
+    const anyVisible = Array.from(optRow.querySelectorAll('.nav-tab')).some(
+      b => b.style.display !== 'none'
+    );
+    optRow.style.display = anyVisible ? '' : 'none';
+  }
+  // Force repaint
+  const row1 = document.getElementById('navTabsRequired');
+  if (row1) void row1.offsetWidth;
+  // If we just hid the active tab, go to Home
   if (!show && tabBtn.classList.contains('active')) {
     showSection('home', document.querySelector('.nav-tab'));
   }
@@ -2316,13 +2321,20 @@ function buildFilename() {
 // ── COLLECT CONFIG FROM WIZARD ───────────────────────────────────────
 function collectConfig() {
   var leaders = [];
-  var names  = document.querySelectorAll('.ldr-name');
-  var roles  = document.querySelectorAll('.ldr-role');
-  var emails = document.querySelectorAll('.ldr-email');
-  var phones = document.querySelectorAll('.ldr-phone');
+  // Scope to wizard container only - the leader detail modal also uses ldr-* classes
+  var wrap = document.getElementById('leaderEntries');
+  var names  = wrap ? wrap.querySelectorAll('.ldr-name')  : [];
+  var roles  = wrap ? wrap.querySelectorAll('.ldr-role')  : [];
+  var emails = wrap ? wrap.querySelectorAll('.ldr-email') : [];
+  var phones = wrap ? wrap.querySelectorAll('.ldr-phone') : [];
   for (var i = 0; i < names.length; i++) {
-    var nm = names[i].value.trim();
-    if (nm) leaders.push({ name: nm, role: roles[i].value.trim(), email: emails[i].value.trim(), phone: phones[i].value.trim() });
+    var nm = (names[i].value || '').trim();
+    if (nm) leaders.push({
+      name: nm,
+      role:  roles[i]  ? (roles[i].value  || '').trim() : '',
+      email: emails[i] ? (emails[i].value || '').trim() : '',
+      phone: phones[i] ? (phones[i].value || '').trim() : ''
+    });
   }
   return {
     type:    document.getElementById('w-type').value,
@@ -3114,15 +3126,43 @@ function swPickEvtType(btn) { document.querySelectorAll('#evTypeGrid .adm-type-b
 function swSubmitEvt() {
   const name=document.getElementById('ev-name').value.trim(), date=document.getElementById('ev-date').value;
   if (!name||!date) { swToast('Name and date are required'); return; }
-  const d=loadSW(); if(!d.evts) d.evts=[];
-  d.evts.push({id:swId(),name,date,time:document.getElementById('ev-time').value,
+  const pushDistrict = !!(document.getElementById('ev-district-push')||{}).checked;
+  const evt = {id:swId(),name,date,time:document.getElementById('ev-time').value,
     loc:document.getElementById('ev-loc').value.trim(),type:_evtType,
-    desc:document.getElementById('ev-desc').value.trim(),added:Date.now()});
-  saveSW(d); swRenderEvts(); swCloseEvt(); swToast('Event added');
+    desc:document.getElementById('ev-desc').value.trim(),added:Date.now()};
+  const d=loadSW(); if(!d.evts) d.evts=[];
+  d.evts.push(evt);
+  saveSW(d);
+  // ── UPLINK: publish to the shared district calendar ────────────────
+  // Works because all pages on the same GitHub Pages origin share localStorage.
+  // COUNCIL SERVER: replace with POST /api/district/events
+  if (pushDistrict) {
+    try {
+      const shared = JSON.parse(localStorage.getItem('sw_district_shared_events')||'[]');
+      const cfg = window.PRELOADED_CONFIG || loadStoredConfig() || {};
+      const info = getUnitInfo(cfg.type);
+      shared.push({
+        id: evt.id, name: evt.name, date: evt.date, time: evt.time,
+        loc: evt.loc, type: evt.type,
+        unit: (cfg.type ? info.short + ' ' + cfg.number : 'A Sweetwater unit'),
+        added: Date.now()
+      });
+      localStorage.setItem('sw_district_shared_events', JSON.stringify(shared));
+    } catch(e) { console.warn('district push failed', e); }
+  }
+  swRenderEvts(); swCloseEvt();
+  swToast(pushDistrict ? 'Event added + published to District calendar' : 'Event added');
 }
 function swRenderEvts() {
   const d=loadSW(); const now=new Date(); now.setHours(0,0,0,0);
-  const up=(d.evts||[]).filter(e=>new Date(e.date+'T00:00')>=now).sort((a,b)=>a.date.localeCompare(b.date));
+  const unitOn = !!document.querySelector('.filter-unit.on');
+  const districtOn = !!document.querySelector('.filter-district.on');
+  const up=(d.evts||[]).filter(e=>{
+    if (new Date(e.date+'T00:00') < now) return false;
+    if (e.type==='district' && !districtOn) return false;
+    if (e.type!=='district' && !unitOn) return false;
+    return true;
+  }).sort((a,b)=>a.date.localeCompare(b.date));
   // update calendar events object and re-render
   for (const k in events) delete events[k];
   up.forEach(e => {
@@ -3130,6 +3170,17 @@ function swRenderEvts() {
     if (!events[key]) events[key]=[];
     events[key].push({name:e.name,type:e.type==='campout'?'outing':e.type==='district'?'district':'unit'});
   });
+  // ── DOWNLINK: merge events broadcast by the District page ──────────
+  // COUNCIL SERVER: replace with GET /api/district/broadcast
+  try {
+    const bc = JSON.parse(localStorage.getItem('sw_district_broadcast')||'[]');
+    bc.forEach(e => {
+      if (new Date(e.date+'T00:00') < now) return;
+      const dt=new Date(e.date+'T00:00'), key=`${dt.getFullYear()}-${dt.getMonth()+1}-${dt.getDate()}`;
+      if (!events[key]) events[key]=[];
+      events[key].push({name:'📡 '+e.name,type:'district'});
+    });
+  } catch(e) {}
   renderCal();
   // update upcoming list if it exists
   const ul=document.getElementById('upcomingList')||document.getElementById('upcomingItems');
@@ -3340,6 +3391,31 @@ function swExportICal() {
   swToast('Calendar exported — import into Google/Apple Calendar or Outlook');
 }
 
+
+// ===================================================================
+// DISTRICT HUB NAVIGATION — works from repo root or units/x/ subfolder
+// ===================================================================
+function goDistrict(view) {
+  var path = location.pathname;
+  var base = path.indexOf('/units/') > -1
+    ? path.slice(0, path.indexOf('/units/') + 1)
+    : path.slice(0, path.lastIndexOf('/') + 1);
+  location.href = base + 'index.html' + (view ? '#' + view : '');
+}
+function showToastSafe(msg) { if (typeof swToast==='function') swToast(msg); else alert(msg); }
+
+// ===================================================================
+// LIVE SYNC — refresh calendar when district page broadcasts an event
+// (the 'storage' event fires when ANOTHER tab on the same origin
+//  writes to localStorage — the heart of the live demo)
+// ===================================================================
+window.addEventListener('storage', function(e) {
+  if (e.key === 'sw_district_broadcast') {
+    if (typeof swRenderEvts === 'function') swRenderEvts();
+    showToastSafe('📡 New event received from the District calendar');
+  }
+});
+
 // ===================================================================
 // INIT on page load
 // ===================================================================
@@ -3479,10 +3555,10 @@ setTimeout(()=>{
   <div class="ldr-box">
     <div class="ldr-hero" id="ldrHero">AB</div>
     <div class="ldr-info">
-      <div class="ldr-name" id="ldrName">Name</div>
+      <div class="ldr-modal-name" id="ldrName">Name</div>
       <div class="ldr-role-txt" id="ldrRole">Role</div>
-      <a class="ldr-link" id="ldrEmail" href="#"><span>✉️</span><span id="ldrEmailTxt">No email on file</span></a>
-      <a class="ldr-link" id="ldrPhone" href="#" style="display:none"><span>📞</span><span id="ldrPhoneTxt"></span></a>
+      <a class="ldr-link" id="ldrEmail" href="javascript:void(0)"><span>✉️</span><span id="ldrEmailTxt">No email on file</span></a>
+      <a class="ldr-link" id="ldrPhone" href="javascript:void(0)" style="display:none"><span>📞</span><span id="ldrPhoneTxt"></span></a>
     </div>
     <div class="ldr-footer"><button class="btn-ldr-close" onclick="swCloseLdr()">Close</button></div>
   </div>
@@ -3527,6 +3603,12 @@ setTimeout(()=>{
         </div>
       </div>
       <div class="adm-fg"><label>Description</label><textarea class="adm-inp adm-ta" id="ev-desc" placeholder="Optional details"></textarea></div>
+      <div class="adm-fg">
+        <div class="adm-check-row" onclick="var c=document.getElementById('ev-district-push');c.checked=!c.checked;event.stopPropagation()">
+          <input type="checkbox" id="ev-district-push" onclick="event.stopPropagation()">
+          <div><div class="adm-check-label">📡 Also publish on the District calendar</div><div class="adm-check-sub">Visible to all units on the Sweetwater District page</div></div>
+        </div>
+      </div>
     </div>
     <div class="adm-foot">
       <button class="btn-adm-cancel" onclick="swCloseEvt()">Cancel</button>
